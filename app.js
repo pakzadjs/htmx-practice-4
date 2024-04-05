@@ -1,11 +1,11 @@
-import express from 'express';
+import express from "express";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('public'));
+app.use(express.static("public"));
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -34,6 +34,7 @@ app.get('/', (req, res) => {
               <input 
                 hx-post="/validate" 
                 hx-target="next p"
+                hx-params="email"
                 type="email" 
                 name="email" 
                 id="email" />
@@ -44,6 +45,7 @@ app.get('/', (req, res) => {
               <input 
                 hx-post="/validate" 
                 hx-target="next p" 
+                hx-params="password"
                 type="password" 
                 name="password" 
                 id="password" />
@@ -61,35 +63,35 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.post('/validate', (req, res) => {
-  if ('email' in req.body && !req.body.email.includes('@')) {
+app.post("/validate", (req, res) => {
+  if ("email" in req.body && !req.body.email.includes("@")) {
     return res.send(`
       E-Mail address is invalid.
     `);
-  } else if ('email' in req.body && req.body.email.includes('@')) {
+  } else if ("email" in req.body && req.body.email.includes("@")) {
     return res.send();
-  } else if ('password' in req.body && req.body.password.trim().length < 8) {
+  } else if ("password" in req.body && req.body.password.trim().length < 8) {
     return res.send(`
       Password must be at least 8 characters long.
     `);
-  } else if ('password' in req.body && req.body.password.trim().length >= 8) {
+  } else if ("password" in req.body && req.body.password.trim().length >= 8) {
     return res.send();
   }
   res.send();
 });
 
-app.post('/login', (req, res) => {
+app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
   let errors = {};
 
-  if (!email || !email.includes('@')) {
-    errors.email = 'Please enter a valid email address.';
+  if (!email || !email.includes("@")) {
+    errors.email = "Please enter a valid email address.";
   }
 
   if (!password || password.trim().length < 8) {
-    errors.password = 'Password must be at least 8 characters long.';
+    errors.password = "Password must be at least 8 characters long.";
   }
 
   if (Object.keys(errors).length > 0) {
@@ -98,7 +100,7 @@ app.post('/login', (req, res) => {
         <ul id="form-errors">
           ${Object.keys(errors)
             .map((key) => `<li>${errors[key]}</li>`)
-            .join('')}
+            .join("")}
         </ul>
       </div>
     `);
@@ -106,7 +108,7 @@ app.post('/login', (req, res) => {
   res.send();
 });
 
-app.get('/authenticated', (req, res) => {
+app.get("/authenticated", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
