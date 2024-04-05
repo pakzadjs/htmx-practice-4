@@ -22,12 +22,15 @@ app.get("/", (req, res) => {
         />
         <link rel="stylesheet" href="/main.css" />
         <script src="/htmx.js" defer></script>
+        <script src="/htmx-response-targets.js" defer></script>
       </head>
       <body>
         <main>
           <form 
+            hx-ext="response-targets"
             hx-post="/login" 
-            hx-target="#extra-information"
+            hx-target-422="#extra-information"
+            hx-target-500="#server-side-error"
             hx-headers='{"x-csrf-token": "abc"}'
             hx-sync="this:replace"
             <!-- https://htmx.org/attributes/hx-sync/ -->
@@ -35,6 +38,7 @@ app.get("/", (req, res) => {
             <div>
               <img src="/images/auth-icon.jpg" alt="A lock icon" />
             </div>
+            <div id="server-side-error"></div>
             <div class="control">
               <label for="email">Email</label>
               <input 
@@ -104,7 +108,7 @@ app.post("/login", (req, res) => {
   }
 
   if (Object.keys(errors).length > 0) {
-    res.send(`
+    res.status(422).send(`
       <ul id="form-errors">
         ${Object.keys(errors)
           .map((key) => `<li>${errors[key]}</li>`)
@@ -112,6 +116,16 @@ app.post("/login", (req, res) => {
       </ul>
     `);
   }
+
+  if (Math.random() > 0.5) {
+    // res.setHeader("HX-Retarget", ".control");
+    res.setHeader("HX-Reswap", "beforebegin");
+    return res.status(500).send(`
+      <p class="error">A server-side error occurred. Please try again.</p>
+    `);
+  }
+
+  res.setHeader("HX-Redirect", "/authenticated");
   res.send();
 });
 
