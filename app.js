@@ -28,7 +28,10 @@ app.get("/", (req, res) => {
           <form 
             hx-post="/login" 
             hx-target="#extra-information"
-            hx-headers='{"x-csrf-token": "abc"}'>
+            hx-headers='{"x-csrf-token": "abc"}'
+            hx-sync="this:replace"
+            <!-- https://htmx.org/attributes/hx-sync/ -->
+            >
             <div>
               <img src="/images/auth-icon.jpg" alt="A lock icon" />
             </div>
